@@ -28,11 +28,13 @@ def play_sound(path_to_file):
 
 
 def record_my_audio():
+    time_duration = int(raw_input('Enter the time duration for your speech clip :-  '))
     FORMAT = pyaudio.paInt16
     CHANNELS = 2
     RATE = 44100
     CHUNK = 1024
-    RECORD_SECONDS = 10
+    RECORD_SECONDS = time_duration
+    print "Recording..."
 
     audio = pyaudio.PyAudio()
 
@@ -49,12 +51,11 @@ def record_my_audio():
     stream.stop_stream()
     stream.close()
     audio.terminate()
+    print "Finished Recording\n"
     return_data = [frames, stream, audio]
     return return_data
 
-def save_my_recording(stream, frames, audio):
-    destination_filename = "my_recording.wav"
-
+def save_my_recording(destination_filename, stream, frames, audio):
     channels = stream._channels
     rate = stream._rate
     format = stream._format
@@ -67,27 +68,20 @@ def save_my_recording(stream, frames, audio):
     wave_File.close()
 
 
+def read_audio(file_path):
+    # function to read audio(wav) file
+    with open(file_path, 'rb') as f:
+        audio = f.read()
+    return audio
+
+
 def get_user_input():
     print "Hello , Record and Play your Audio Here \n\n"
-    print "What do you want to do : \n 1) Record and Listen to audio \n 2) Hear Previously saved video \n"
-    entered_value = int(raw_input("Enter 1 or 2 :-  "))
-    if entered_value in [1, 2]:
+    print "What do you want to do :\n 1) Record and Listen to audio\n 2) Hear Previously saved video\n 3) Convert Audio To Text\n"
+    entered_value = int(raw_input("Enter 1 , 2 or 3 -->  "))
+    if entered_value in [1, 2, 3]:
         return entered_value
     else:
         print "It seems you entered the Wrong Choice .Try Again. \n"
         return get_user_input()
 
-choice = get_user_input()
-
-if choice == 1:
-    print "Recording..."
-    data = record_my_audio()
-    print "Finished Recording\n"
-    save_my_recording(data[1], data[0], data[2])
-    play_sound("my_recording.wav")
-else:
-    file_name = "my_recording.wav"
-    if os.path.exists(file_name):
-        play_sound(file_name)
-    else:
-        print "\nThere is no Audio Recorded Yet. "
